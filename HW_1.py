@@ -1,6 +1,5 @@
 import subprocess
 import locale
-
 import chardet
 from chardet.universaldetector import UniversalDetector
 
