@@ -7,10 +7,12 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from common_functions import get_message, send_message
 from AsyncChat.messenger.log.client_log_config import LOGGER
+from wrap import log
 
 CLIENT_LOGGER = LOGGER
 
 
+@log
 def create_presence(account_name='Guest'):
     out = {
         os.environ.get("ACTION"): os.environ.get("PRESENCE"),
@@ -23,6 +25,7 @@ def create_presence(account_name='Guest'):
     return out
 
 
+@log
 def process_ans(message):
     CLIENT_LOGGER.debug(f'Анализ сообщения от сервера: {message}')
     if os.environ.get("RESPONSE") in message:
