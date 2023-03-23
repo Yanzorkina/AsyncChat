@@ -6,10 +6,12 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from common_functions import get_message, send_message
 from AsyncChat.messenger.log.server_log_config import LOGGER
+from wrap import log
 
 SERVER_LOGGER = LOGGER
 
 
+@log
 def process_client_message(message):
     SERVER_LOGGER.debug(f'Получено сообщение от клиента: {message}')
     if not (not (os.environ.get("ACTION") in message) or not (message[os.environ.get("ACTION")] == os.environ.get(

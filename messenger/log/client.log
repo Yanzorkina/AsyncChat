@@ -1,3 +1,13 @@
 2023-03-16 19:14:25,815 DEBUG client.py Создано presence сообщение для Guest
 2023-03-16 19:14:25,815 DEBUG client.py Анализ сообщения от сервера: {'response': 200}
 2023-03-16 19:14:25,815 INFO client.py Ответ от сервера получен 200 : OK
+2023-03-20 17:35:46,237 DEBUG client.py Создано presence сообщение для Guest
+2023-03-20 17:35:46,237 DEBUG client.py Создано presence сообщение для Guest
+2023-03-20 17:35:46,237 DEBUG wrap.py Функция create_presence вызвана из функции main
+2023-03-20 17:35:46,237 DEBUG wrap.py Функция create_presence вызвана из функции main
+2023-03-20 17:35:46,253 DEBUG client.py Анализ сообщения от сервера: {'response': 200}
+2023-03-20 17:35:46,253 DEBUG client.py Анализ сообщения от сервера: {'response': 200}
+2023-03-20 17:35:46,253 DEBUG wrap.py Функция process_ans вызвана из функции main
+2023-03-20 17:35:46,253 DEBUG wrap.py Функция process_ans вызвана из функции main
+2023-03-20 17:35:46,253 INFO client.py Ответ от сервера получен 200 : OK
+2023-03-20 17:35:46,253 INFO client.py Ответ от сервера получен 200 : OK
