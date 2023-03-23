@@ -6,10 +6,39 @@ import time
 from os.path import join, dirname
 from dotenv import load_dotenv
 from common_functions import get_message, send_message
-from AsyncChat.messenger.log.client_log_config import LOGGER
+from log.client_log_config import LOGGER
 from wrap import log
 
 CLIENT_LOGGER = LOGGER
+
+
+@log
+def message_from_server(message):
+    if os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
+            "MESSAGE") and os.environ.get("SENDER") in message and os.environ.get("MESSAGE_TEXT") in message:
+        print(f'Сообшение от {message[os.environ.get("SENDER")]}: {message[os.environ.get("MESSAGE_TEXT")]}')
+        CLIENT_LOGGER.info(
+            f'Сообшение от {message[os.environ.get("SENDER")]}: {message[os.environ.get("MESSAGE_TEXT")]}')
+    else:
+        CLIENT_LOGGER.error(f'Некорректное сообщение с сервера: {message}')
+
+
+@log
+def create_message(sock, account_name='Guest'):
+    message = input('Введите сообщение для отправки или \'exit\' для завершения работы: ')
+    if message == 'exit':
+        sock.close()
+        LOGGER.info('Завершение работы по команде пользователя.')
+        print('Вы вышли.')
+        sys.exit(0)
+    message_dict = {
+        os.environ.get("ACTION"): os.environ.get("MESSAGE"),
+        os.environ.get("TIME"): time.time(),
+        os.environ.get("ACCOUNT_NAME"): account_name,
+        os.environ.get("MESSAGE_TEXT"): message
+    }
+    LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
+    return message_dict
 
 
 @log
@@ -41,6 +70,9 @@ def main():
     try:
         server_address = sys.argv[1]
         server_port = int(sys.argv[2])
+        client_mode = sys.argv[3]
+        CLIENT_LOGGER.info(
+            f'Клиент запущен. Адрес сервера:{server_address}, порт:{server_port}, режим работы: {client_mode}')
         if server_port < 1024 or server_port > 65535:
             CLIENT_LOGGER.critical(f'Попытка использования недопустимого порта {server_port}')
             sys.exit(1)
@@ -54,14 +86,28 @@ def main():
 
     transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     transport.connect((server_address, int(server_port)))
-    message_to_server = create_presence()
-    send_message(transport, message_to_server)
+    send_message(transport, create_presence())
     try:
         answer = process_ans(get_message(transport))
         CLIENT_LOGGER.info(f'Ответ от сервера получен {answer}')
         print(answer)
     except (ValueError, json.JSONDecodeError):
         CLIENT_LOGGER.critical('Не удалось декодировать сообщение сервера.')
+
+    while True:
+        if client_mode == 'send':
+            try:
+                send_message(transport, create_message(transport))
+            except (ConnectionError, ConnectionResetError, ConnectionAbortedError, ConnectionRefusedError):
+                CLIENT_LOGGER.error(f"Соединение с сервером {server_address} потеряно.")
+                sys.exit()
+
+        if client_mode == 'listen':
+            try:
+                message_from_server(get_message(transport))
+            except (ConnectionError, ConnectionResetError, ConnectionAbortedError, ConnectionRefusedError):
+                CLIENT_LOGGER.error(f"Соединение с сервером {server_address} потеряно.")
+                sys.exit()
 
 
 if __name__ == '__main__':
