@@ -1,7 +1,7 @@
 import sys
 import os
 import logging.handlers
-from AsyncChat.messenger.log.log_config import FILE_LOGGING_LEVEL, STREAM_LOGGING_LEVEL, SERVER_FORMAT
+from .log_config import FILE_LOGGING_LEVEL, STREAM_LOGGING_LEVEL, SERVER_FORMAT
 
 sys.path.append('../')
 
