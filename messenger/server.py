@@ -3,6 +3,7 @@ import select
 import socket
 import sys
 import json
+import threading
 import time
 from os.path import join, dirname
 from dotenv import load_dotenv
@@ -10,8 +11,10 @@ from common_functions import get_message, send_message
 from log.server_log_config import LOGGER
 from wrap import log
 from metaclass_server import ServerMaker
+from storage import ServerStorage
 
 SERVER_LOGGER = LOGGER
+
 
 # Дескриптор порта
 class Port:
@@ -26,16 +29,19 @@ class Port:
         self.name = name
 
 
-class Server(metaclass=ServerMaker):
+class Server(threading.Thread, metaclass=ServerMaker):
     port = Port()
 
-    def __init__(self, listen_address, listen_port):
+    def __init__(self, listen_address, listen_port, database):
         self.addr = listen_address
         self.port = listen_port
         # очередь клиентов, сообщений, словарь сопоставления сокета и имени
         self.clients = []
         self.messages = []
         self.names = {}
+        self.database = database
+
+        super().__init__()
 
     def init_socket(self):
         # Подготовка сокета
@@ -76,7 +82,7 @@ class Server(metaclass=ServerMaker):
                     try:
                         self.process_client_message(get_message(client_with_message), client_with_message)
                     except Exception as e:
-                        # print(e, 'строка 97')  # какая ошибка
+                        print(e, 'строка 97')  # какая ошибка
                         SERVER_LOGGER.info(f'{client_with_message.getpeername()} отключился.')
                         self.clients.remove(client_with_message)
 
@@ -115,6 +121,9 @@ class Server(metaclass=ServerMaker):
             if message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")] not in self.names.keys():
                 self.names[message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")]] = client
                 send_message(client, {os.environ.get("RESPONSE"): 200})
+                client_ip = client.getpeername()[0]
+                self.database.user_login(message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")],
+                                         client_ip)
                 print(f"Зарегистрирован пользователь {client}")
             else:
                 response = {os.environ.get("RESPONSE"): 400, os.environ.get("ERROR"): None}
@@ -148,6 +157,8 @@ def main():
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
+    database = ServerStorage()
+
     # Парсинг аргументов. Выполняется единожды при запуске.
     try:
         if '-p' in sys.argv:
@@ -179,7 +190,7 @@ def main():
             'В случае указания параметра \'a\'- необходимо указать адрес.')
         sys.exit(1)
 
-    server = Server(listen_address, listen_port)
+    server = Server(listen_address, listen_port, database)
     server.main_loop()
 
 
