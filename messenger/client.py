@@ -10,75 +10,86 @@ from dotenv import load_dotenv
 from common_functions import get_message, send_message
 from log.client_log_config import LOGGER
 from wrap import log
+from metaclass_client import ClientMaker
 
 CLIENT_LOGGER = LOGGER
 
 
-@log
-def create_exit_message(account_name):
-    return {
-        os.environ.get("ACTION"): os.environ.get("EXIT"),
-        os.environ.get("TIME"): time.time(),
-        os.environ.get("ACCOUNT_NAME"): account_name
-    }
+class ClientSender(threading.Thread, metaclass=ClientMaker):
+    def __init__(self, account_name, sock):
+        self.account_name = account_name
+        self.sock = sock
+        super().__init__()
 
+    @log
+    def create_exit_message(self):
+        return {
+            os.environ.get("ACTION"): os.environ.get("EXIT"),
+            os.environ.get("TIME"): time.time(),
+            os.environ.get("ACCOUNT_NAME"): self.account_name
+        }
 
-@log
-def message_from_server(sock, my_username):
-    while True:
+    @log
+    def create_message(self):
+        to_user = input('Введите имя получателя сообщения: ')
+        message = input('Введите сообщение для отправки: ')
+        message_dict = {
+            os.environ.get("ACTION"): os.environ.get("MESSAGE"),
+            os.environ.get("TIME"): time.time(),
+            os.environ.get("SENDER"): self.account_name,
+            os.environ.get("MESSAGE_TEXT"): message,
+            os.environ.get("DESTINATION"): to_user
+        }
+        CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
         try:
-            message = get_message(sock)
-            if os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                    "MESSAGE") and os.environ.get("SENDER") in message and os.environ.get(
-                "DESTINATION") in message and os.environ.get("MESSAGE_TEXT") in message and message[
-                os.environ.get("DESTINATION")] == my_username:
-                print(
-                    f'\nПолучено сообщение от пользователя {message[os.environ.get("SENDER")]}:\n{message[os.environ.get("MESSAGE_TEXT")]}')
-                CLIENT_LOGGER.info(
-                    f'Получено сообщение от пользователя {message[os.environ.get("SENDER")]}:\n{message[os.environ.get("MESSAGE_TEXT")]}')
+            send_message(self.sock, message_dict)
+            CLIENT_LOGGER.info(f'Отпрвлено сообщение для {to_user}')
+        except Exception as e:
+            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+            sys.exit(1)
+
+    @log
+    def run(self): # user_interactive
+        print('message - режим отправки сообщения \nexit - выход из программы')
+        while True:
+            command = input('Введите команду: ')
+            if command == 'message':
+                self.create_message()
+            elif command == 'exit':
+                send_message(self.sock, self.create_exit_message())
+                print('Завершение соединения.')
+                CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
+                time.sleep(0.5)
+                break
             else:
-                CLIENT_LOGGER.error(f'Получено некорректное сообщение от сервера:{message}')
-        except (OSError, ConnectionError, ConnectionAbortedError,
-                ConnectionResetError, json.JSONDecodeError):
-            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером.')
-            break
+                print('Команда не распознана, попробойте снова. help - вывести поддерживаемые команды.')
 
 
-@log
-def create_message(sock, account_name='Guest'):
-    to_user = input('Введите имя получателя сообщения: ')
-    message = input('Введите сообщение для отправки: ')
-    message_dict = {
-        os.environ.get("ACTION"): os.environ.get("MESSAGE"),
-        os.environ.get("TIME"): time.time(),
-        os.environ.get("SENDER"): account_name,
-        os.environ.get("MESSAGE_TEXT"): message,
-        os.environ.get("DESTINATION"): to_user
-    }
-    CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
-    try:
-        send_message(sock, message_dict)
-        CLIENT_LOGGER.info(f'Отпрвлено сообщение для {to_user}')
-    except Exception as e:
-        CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
-        sys.exit(1)
+class ClientReader(threading.Thread, metaclass=ClientMaker):
+    def __init__(self, account_name, sock):
+        self.account_name = account_name
+        self.sock = sock
+        super().__init__()
 
-
-@log
-def user_interactive(sock, username):
-    print('message - режим отправки сообщения \nexit - выход из программы')
-    while True:
-        command = input('Введите команду: ')
-        if command == 'message':
-            create_message(sock, username)
-        elif command == 'exit':
-            send_message(sock, create_exit_message(username))
-            print('Завершение соединения.')
-            CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
-            time.sleep(0.5)
-            break
-        else:
-            print('Команда не распознана, попробойте снова. help - вывести поддерживаемые команды.')
+    @log
+    def run(self): #message_from_server
+        while True:
+            try:
+                message = get_message(self.sock)
+                if os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
+                        "MESSAGE") and os.environ.get("SENDER") in message and os.environ.get(
+                    "DESTINATION") in message and os.environ.get("MESSAGE_TEXT") in message and message[
+                    os.environ.get("DESTINATION")] == self.account_name:
+                    print(
+                        f'\nПолучено сообщение от пользователя {message[os.environ.get("SENDER")]}:\n{message[os.environ.get("MESSAGE_TEXT")]}')
+                    CLIENT_LOGGER.info(
+                        f'Получено сообщение от пользователя {message[os.environ.get("SENDER")]}:\n{message[os.environ.get("MESSAGE_TEXT")]}')
+                else:
+                    CLIENT_LOGGER.error(f'Получено некорректное сообщение от сервера:{message}')
+            except (OSError, ConnectionError, ConnectionAbortedError,
+                    ConnectionResetError, json.JSONDecodeError):
+                CLIENT_LOGGER.critical(f'Потеряно соединение с сервером.')
+                break
 
 
 @log
@@ -145,12 +156,12 @@ def main():
         sys.exit(1)
     else:
         # Прием сообщений
-        reciever = threading.Thread(target=message_from_server, args=(transport, client_name))
+        reciever = ClientReader(client_name, transport)
         reciever.daemon = True
         reciever.start()
 
         # Отправка сообщений и меню
-        user_interface = threading.Thread(target=user_interactive, args=(transport, client_name))
+        user_interface = ClientSender(client_name, transport)
         user_interface.daemon = True
         user_interface.start()
         CLIENT_LOGGER.debug('Процессы запущены')
