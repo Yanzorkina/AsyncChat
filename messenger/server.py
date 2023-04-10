@@ -3,6 +3,7 @@ import select
 import socket
 import sys
 import json
+import threading
 import time
 from os.path import join, dirname
 from dotenv import load_dotenv
@@ -10,8 +11,12 @@ from common_functions import get_message, send_message
 from log.server_log_config import LOGGER
 from wrap import log
 from metaclass_server import ServerMaker
+from storage import ServerStorage
 
 SERVER_LOGGER = LOGGER
+new_connection = False
+conflag_lock = threading.Lock()
+
 
 # Дескриптор порта
 class Port:
@@ -26,16 +31,19 @@ class Port:
         self.name = name
 
 
-class Server(metaclass=ServerMaker):
+class Server(threading.Thread, metaclass=ServerMaker):
     port = Port()
 
-    def __init__(self, listen_address, listen_port):
+    def __init__(self, listen_address, listen_port, database):
         self.addr = listen_address
         self.port = listen_port
         # очередь клиентов, сообщений, словарь сопоставления сокета и имени
         self.clients = []
         self.messages = []
         self.names = {}
+        self.database = database
+
+        super().__init__()
 
     def init_socket(self):
         # Подготовка сокета
@@ -64,19 +72,20 @@ class Server(metaclass=ServerMaker):
             send_data_list = []
             error_list = []
 
+            # Есть ли клиенты в состоянии ожидания
             try:
                 if self.clients:
                     recv_data_list, send_data_list, error_list = select.select(self.clients, self.clients, [], 0)
             except OSError:
                 pass
 
-            # Прием сообщений
+            # Прием сообщений.
             if recv_data_list:
                 for client_with_message in recv_data_list:
                     try:
                         self.process_client_message(get_message(client_with_message), client_with_message)
                     except Exception as e:
-                        # print(e, 'строка 97')  # какая ошибка
+                        print(e, 'строка 88')  # какая ошибка
                         SERVER_LOGGER.info(f'{client_with_message.getpeername()} отключился.')
                         self.clients.remove(client_with_message)
 
@@ -95,18 +104,19 @@ class Server(metaclass=ServerMaker):
         if message[os.environ.get("DESTINATION")] in self.names and self.names[
             message[os.environ.get("DESTINATION")]] in listen_socks:
             send_message(self.names[message[os.environ.get("DESTINATION")]], message)
-            LOGGER.info(f'Отправлено сообщение пользователю {message[os.environ.get("DESTINATION")]} '
-                        f'от пользователя {message[os.environ.get("SENDER")]}.')
+            SERVER_LOGGER.info(f'Отправлено сообщение пользователю {message[os.environ.get("DESTINATION")]} '
+                               f'от пользователя {message[os.environ.get("SENDER")]}.')
         elif message[os.environ.get("DESTINATION")] in self.names and self.names[
             message[os.environ.get("DESTINATION")]] not in listen_socks:
             raise ConnectionError
         else:
-            LOGGER.error(
+            SERVER_LOGGER.error(
                 f'Пользователь {message[os.environ.get("DESTINATION")]} не зарегистрирован на сервере, '
                 f'отправка сообщения невозможна.')
 
     @log
     def process_client_message(self, message, client):
+        global new_connection
         SERVER_LOGGER.debug(f'Получено сообщение от клиента: {message}')
         # Для сообщение о присутствии.
         if os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
@@ -115,7 +125,13 @@ class Server(metaclass=ServerMaker):
             if message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")] not in self.names.keys():
                 self.names[message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")]] = client
                 send_message(client, {os.environ.get("RESPONSE"): 200})
+                client_ip = client.getpeername()[0]
+                self.database.user_login(message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")],
+                                         client_ip)
                 print(f"Зарегистрирован пользователь {client}")
+                with conflag_lock:
+                    new_connection = True
+            # Пользователь зарегестрирован
             else:
                 response = {os.environ.get("RESPONSE"): 400, os.environ.get("ERROR"): None}
                 response[os.environ.get("ERROR")] = 'Это имя уже занято'
@@ -135,7 +151,31 @@ class Server(metaclass=ServerMaker):
             self.clients.remove(self.names[message[os.environ.get("ACCOUNT_NAME")]])
             self.names[message[os.environ.get("ACCOUNT_NAME")]].close()
             del self.names[message[os.environ.get("ACCOUNT_NAME")]]
+            with conflag_lock:
+                new_connection = True
             return
+        # Блок обработки запросов, савязанных со списком контактов.
+        # Запрос списка контактов (добавить в databese функцию get_contact)
+        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
+                "GET_CONTACTS") and os.environ.get("CHAT_USER") in message and self.names[
+            message[os.environ.get("CHAT_USER")]] == client:
+            response = {os.environ.get("RESPONSE"): 202,
+                        os.environ.get("ALERT"): self.database.get_contacts(message[os.environ.get("CHAT_USER")])}
+            send_message(client, response)
+        # Запрос добавления контакта (добавить в databese функцию add_contact)
+        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get("ADD_CONTACT") and os.environ.get("CHAT_USER") in message and message[os.environ.get("USER_LOGIN")] in message:
+            response = {os.environ.get("RESPONSE"): 200}
+            print("i'm here!")
+            self.database.add_contact(message[os.environ.get("CHAT_USER")], message[os.environ.get("USER_LOGIN")])
+            self.message = send_message(client, response)
+        # Запрос удаления контакта (добавить в databese функцию del_contact)
+        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
+                "DEL_CONTACT") and os.environ.get("CHAT_USER") in message and self.names[
+            message[os.environ.get("CHAT_USER")]] == client and message[os.environ.get("USER_LOGIN")] in message:
+            response = {os.environ.get("RESPONSE"): 200}
+            self.database.del_contact(message[os.environ.get("CHAT_USER")], message[os.environ.get("USER_LOGIN")])
+            send_message(client, response)
+
         # Иначе отдаём Bad request
         else:
             response = {os.environ.get("RESPONSE"): 400, os.environ.get("ERROR"): None}
@@ -147,6 +187,8 @@ class Server(metaclass=ServerMaker):
 def main():
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
+
+    database = ServerStorage()
 
     # Парсинг аргументов. Выполняется единожды при запуске.
     try:
@@ -179,7 +221,7 @@ def main():
             'В случае указания параметра \'a\'- необходимо указать адрес.')
         sys.exit(1)
 
-    server = Server(listen_address, listen_port)
+    server = Server(listen_address, listen_port, database)
     server.main_loop()
 
 
