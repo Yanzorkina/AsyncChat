@@ -39,7 +39,10 @@ class ServerStorage:
 
         user_history_table = Table('User_history', self.metadata,
                                    Column('id', Integer, primary_key=True),
-                                   Column('user_id', ForeignKey('Users.id'), unique=True),
+
+                                   Column('user_id', ForeignKey('Users.id')),
+       
+
                                    Column('ip_address', String(50)),
                                    Column('port', Integer),
                                    Column('connected_at', DateTime)
@@ -72,10 +75,34 @@ class ServerStorage:
 
         self.session.commit()
 
-    def user_contacts(self, from_user, to_user):
-        pass
+    def get_contacts(self, username):
+        username = self.session.query(self.User).filter_by(login=username).first()
+        query = self.session.query(self.ContactsList).filter_by(from_user_id=username.id)
+        return query.all()
+
+    def add_contact(self, who_adds, who_to_add):
+        who_adds = self.session.query(self.User).filter_by(login=who_adds).first()
+        who_to_add = self.session.query(self.User).filter_by(login=who_to_add).first()
+        if who_to_add:
+            new_contact = self.ContactsList(who_adds.id, who_to_add.id)
+            self.session.add(new_contact)
+
+    def del_contact(self, who_removes, will_be_removed):
+        who_removes = self.session.query(self.User).filter_by(login=who_removes).first()
+        will_be_removed = self.session.query(self.User).filter_by(login=will_be_removed).first()
+        if will_be_removed:
+            try:
+                self.session.query(self.ContactsList).filter_by(self.ContactsList.from_user_id == who_removes.id,
+                                                                self.ContactsList.to_user_id == will_be_removed.id).delete()
+                self.session.commit()
+            except Exception:
+                pass
+
+
 
 
 if __name__ == '__main__':
     test_db = ServerStorage()
+
     test_db.user_login('client_1', '192.168.1.4')
+

@@ -48,6 +48,55 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
             CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
             sys.exit(1)
 
+    def get_contacts(self):
+        message_dict = {
+            os.environ.get("ACTION"): os.environ.get("GET_CONTACTS"),
+            os.environ.get("TIME"): time.time(),
+            os.environ.get("CHAT_USER"): self.account_name
+        }
+        CLIENT_LOGGER.debug(f'Сформирован запрос на список контактов: {message_dict}')
+        try:
+            send_message(self.sock, message_dict)
+            CLIENT_LOGGER.info(f'Отпрвлено сообщение на сервер с запросом контактов для {self.account_name}')
+        except Exception as e:
+            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+            sys.exit(1)
+
+
+    def add_contact(self):
+        who_to_add = input("Какого пользователя вы хотите добавить?")
+        message_dict = {
+            os.environ.get("ACTION"): os.environ.get("ADD_CONTACT"),
+            #os.environ.get("TIME"): time.time(),
+            os.environ.get("CHAT_USER"): self.account_name,
+            os.environ.get("USER_LOGIN"): who_to_add
+        }
+        CLIENT_LOGGER.debug(f'Сформирован запрос на добавление контакта: {message_dict}')
+        try:
+            send_message(self.sock, message_dict)
+            CLIENT_LOGGER.info(f'Отпрвлено сообщение на сервер с запросом на добавление  {who_to_add}')
+        except Exception as e:
+            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+            sys.exit(1)
+
+    # пока не DRY
+    def del_contact(self):
+        will_be_removed = input("Какого пользователя вы хотите добавить?")
+        message_dict = {
+            os.environ.get("ACTION"): os.environ.get("DEL_CONTACT"),
+            os.environ.get("TIME"): time.time(),
+            os.environ.get("CHAT_USER"): self.account_name,
+            os.environ.get("USER_LOGIN"): will_be_removed
+        }
+        CLIENT_LOGGER.debug(f'Сформирован запрос на удаление контакта: {message_dict}')
+        try:
+            send_message(self.sock, message_dict)
+            CLIENT_LOGGER.info(f'Отпрвлено сообщение на сервер с запросом на удаление  {will_be_removed}')
+        except Exception as e:
+            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+            sys.exit(1)
+
+
     @log
     def run(self): # user_interactive
         print('message - режим отправки сообщения \nexit - выход из программы')
@@ -61,6 +110,13 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
                 CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
                 time.sleep(0.5)
                 break
+            elif command == 'get_contacts':
+                self.get_contacts()
+            elif command == 'add_contact':
+                self.add_contact()
+            elif command == 'del_contact':
+                self.del_contact()
+
             else:
                 print('Команда не распознана, попробойте снова. help - вывести поддерживаемые команды.')
 
