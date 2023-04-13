@@ -39,7 +39,10 @@ class ServerStorage:
 
         user_history_table = Table('User_history', self.metadata,
                                    Column('id', Integer, primary_key=True),
+
                                    Column('user_id', ForeignKey('Users.id')),
+       
+
                                    Column('ip_address', String(50)),
                                    Column('port', Integer),
                                    Column('connected_at', DateTime)
@@ -96,6 +99,10 @@ class ServerStorage:
                 pass
 
 
+
+
 if __name__ == '__main__':
     test_db = ServerStorage()
+
     test_db.user_login('client_1', '192.168.1.4')
+

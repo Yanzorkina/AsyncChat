@@ -18,6 +18,7 @@ new_connection = False
 conflag_lock = threading.Lock()
 
 
+
 # Дескриптор порта
 class Port:
     def __set__(self, instance, value):
@@ -86,6 +87,7 @@ class Server(threading.Thread, metaclass=ServerMaker):
                         self.process_client_message(get_message(client_with_message), client_with_message)
                     except Exception as e:
                         print(e, 'строка 88')  # какая ошибка
+
                         SERVER_LOGGER.info(f'{client_with_message.getpeername()} отключился.')
                         self.clients.remove(client_with_message)
 
