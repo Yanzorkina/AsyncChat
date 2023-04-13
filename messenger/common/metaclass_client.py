@@ -1,8 +1,7 @@
 import dis
 
-
 class ClientMaker(type):
-    def __init__(cls, clsname, bases, clsdict):
+    def __init__(self, clsname, bases, clsdict):
         methods = []
         for func in clsdict:
             try:
@@ -17,7 +16,6 @@ class ClientMaker(type):
         for command in ('accept', 'listen', 'socket'):
             if command in methods:
                 raise TypeError('В классе обнаружено использование запрещённого метода')
-        # print(methods) output: ['super', 'inspect', 'LOGGER']
         # if 'get_message' in methods or 'send_message' in methods:
         #     pass
         # else:

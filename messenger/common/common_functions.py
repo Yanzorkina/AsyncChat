@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 
 def get_message(client):
-    dotenv_path = join(dirname(__file__), '.env')
+    dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     encoded_response = client.recv(int(os.environ.get("MAX_PACKAGE_LENGTH")))
     if isinstance(encoded_response, bytes):
@@ -18,7 +18,7 @@ def get_message(client):
 
 
 def send_message(sock, message):
-    dotenv_path = join(dirname(__file__), '.env')
+    dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     js_message = json.dumps(message)
     encoded_message = js_message.encode(os.environ.get("ENCODING"))
