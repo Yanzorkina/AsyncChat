@@ -1,6 +1,6 @@
 from __main__ import __file__ as where_am_i
-import log.client_log_config as of_client
-import log.server_log_config as of_server
+import AsyncChat.messenger.log.client_log_config as of_client
+import AsyncChat.messenger.log.server_log_config as of_server
 import inspect
 
 if where_am_i.endswith('server.py'):

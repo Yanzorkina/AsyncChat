@@ -7,52 +7,72 @@ import threading
 import time
 from os.path import join, dirname
 from dotenv import load_dotenv
-from common_functions import get_message, send_message
+from common.common_functions import get_message, send_message
 from log.client_log_config import LOGGER
-from wrap import log
-from metaclass_client import ClientMaker
+from AsyncChat.messenger.common.wrap import log
+from AsyncChat.messenger.common.metaclass_client import ClientMaker
+from common.jim_variables import *
+from database.client_database import ClientDatabase
 
 CLIENT_LOGGER = LOGGER
 
+# Будем обращаться к серверу и базе данных только в контекстах
+sock_lock = threading.Lock()
+database_lock = threading.Lock()
+
 
 class ClientSender(threading.Thread, metaclass=ClientMaker):
-    def __init__(self, account_name, sock):
+    def __init__(self, account_name, sock, database):
         self.account_name = account_name
         self.sock = sock
+        self.database = database
         super().__init__()
 
     @log
     def create_exit_message(self):
         return {
-            os.environ.get("ACTION"): os.environ.get("EXIT"),
-            os.environ.get("TIME"): time.time(),
-            os.environ.get("ACCOUNT_NAME"): self.account_name
+            ACTION: EXIT,
+            TIME: time.time(),
+            ACCOUNT_NAME: self.account_name
         }
 
     @log
     def create_message(self):
         to_user = input('Введите имя получателя сообщения: ')
         message = input('Введите сообщение для отправки: ')
+
+        # Проверка существования пользователя
+        with database_lock:
+            if not self.database.check_user(to_user):
+                CLIENT_LOGGER.error(f'Невозможно отправить сообщение несуществующему пользователю {to_user}')
+                return
+
         message_dict = {
-            os.environ.get("ACTION"): os.environ.get("MESSAGE"),
-            os.environ.get("TIME"): time.time(),
-            os.environ.get("SENDER"): self.account_name,
-            os.environ.get("MESSAGE_TEXT"): message,
-            os.environ.get("DESTINATION"): to_user
+            ACTION: MESSAGE,
+            TIME: time.time(),
+            SENDER: self.account_name,
+            MESSAGE_TEXT: message,
+            DESTINATION: to_user
         }
         CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
-        try:
-            send_message(self.sock, message_dict)
-            CLIENT_LOGGER.info(f'Отпрвлено сообщение для {to_user}')
-        except Exception as e:
-            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
-            sys.exit(1)
+
+        # Сохранение сообщения в базе клиента
+        with database_lock:
+            self.database.save_message(self.account_name, to_user, message)
+
+        with sock_lock:
+            try:
+                send_message(self.sock, message_dict)
+                CLIENT_LOGGER.info(f'Отпрвлено сообщение для {to_user}')
+            except Exception as e:
+                CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
+                sys.exit(1)
 
     def get_contacts(self):
         message_dict = {
-            os.environ.get("ACTION"): os.environ.get("GET_CONTACTS"),
-            os.environ.get("TIME"): time.time(),
-            os.environ.get("CHAT_USER"): self.account_name
+            ACTION: GET_CONTACTS,
+            TIME: time.time(),
+            CHAT_USER: self.account_name
         }
         CLIENT_LOGGER.debug(f'Сформирован запрос на список контактов: {message_dict}')
         try:
@@ -62,14 +82,13 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
             CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
             sys.exit(1)
 
-
     def add_contact(self):
         who_to_add = input("Какого пользователя вы хотите добавить?")
         message_dict = {
-            os.environ.get("ACTION"): os.environ.get("ADD_CONTACT"),
-            #os.environ.get("TIME"): time.time(),
-            os.environ.get("CHAT_USER"): self.account_name,
-            os.environ.get("USER_LOGIN"): who_to_add
+            ACTION: ADD_CONTACT,
+            TIME: time.time(),
+            CHAT_USER: self.account_name,
+            TARGET_USER: who_to_add
         }
         CLIENT_LOGGER.debug(f'Сформирован запрос на добавление контакта: {message_dict}')
         try:
@@ -83,10 +102,10 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
     def del_contact(self):
         will_be_removed = input("Какого пользователя вы хотите добавить?")
         message_dict = {
-            os.environ.get("ACTION"): os.environ.get("DEL_CONTACT"),
-            os.environ.get("TIME"): time.time(),
-            os.environ.get("CHAT_USER"): self.account_name,
-            os.environ.get("USER_LOGIN"): will_be_removed
+            ACTION: DEL_CONTACT,
+            TIME: time.time(),
+            CHAT_USER: self.account_name,
+            TARGET_USER: will_be_removed
         }
         CLIENT_LOGGER.debug(f'Сформирован запрос на удаление контакта: {message_dict}')
         try:
@@ -96,9 +115,8 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
             CLIENT_LOGGER.critical(f'Потеряно соединение с сервером. {e}')
             sys.exit(1)
 
-
     @log
-    def run(self): # user_interactive
+    def run(self):  # user_interactive
         print('message - режим отправки сообщения \nexit - выход из программы')
         while True:
             command = input('Введите команду: ')
@@ -128,18 +146,15 @@ class ClientReader(threading.Thread, metaclass=ClientMaker):
         super().__init__()
 
     @log
-    def run(self): #message_from_server
+    def run(self):  # message_from_server
         while True:
             try:
                 message = get_message(self.sock)
-                if os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                        "MESSAGE") and os.environ.get("SENDER") in message and os.environ.get(
-                    "DESTINATION") in message and os.environ.get("MESSAGE_TEXT") in message and message[
-                    os.environ.get("DESTINATION")] == self.account_name:
-                    print(
-                        f'\nПолучено сообщение от пользователя {message[os.environ.get("SENDER")]}:\n{message[os.environ.get("MESSAGE_TEXT")]}')
-                    CLIENT_LOGGER.info(
-                        f'Получено сообщение от пользователя {message[os.environ.get("SENDER")]}:\n{message[os.environ.get("MESSAGE_TEXT")]}')
+                if ACTION in message and message[
+                    ACTION] == MESSAGE and SENDER in message and DESTINATION in message and MESSAGE_TEXT in message and \
+                        message[DESTINATION] == self.account_name:
+                    print(f'\nПолучено сообщение от пользователя {message[SENDER]}:\n{message[MESSAGE_TEXT]}')
+                    CLIENT_LOGGER.info(f'Получено сообщение от пользователя {message[SENDER]}:\n{message[MESSAGE_TEXT]}')
                 else:
                     CLIENT_LOGGER.error(f'Получено некорректное сообщение от сервера:{message}')
             except (OSError, ConnectionError, ConnectionAbortedError,
@@ -151,23 +166,23 @@ class ClientReader(threading.Thread, metaclass=ClientMaker):
 @log
 def create_presence(account_name='Guest'):
     out = {
-        os.environ.get("ACTION"): os.environ.get("PRESENCE"),
-        os.environ.get("TIME"): time.time(),
-        os.environ.get("CHAT_USER"): {
-            os.environ.get("ACCOUNT_NAME"): account_name
+        ACTION: PRESENCE,
+        TIME: time.time(),
+        CHAT_USER: {
+            ACCOUNT_NAME: account_name
         }
     }
-    CLIENT_LOGGER.debug(f'Создано {os.environ.get("PRESENCE")} сообщение для {account_name}')
+    CLIENT_LOGGER.debug(f'Создано {PRESENCE} сообщение для {account_name}')
     return out
 
 
 @log
 def process_ans(message):
     CLIENT_LOGGER.debug(f'Анализ сообщения от сервера: {message}')
-    if os.environ.get("RESPONSE") in message:
-        if message[os.environ.get("RESPONSE")] == 200:
+    if RESPONSE in message:
+        if message[RESPONSE] == 200:
             return '200 : OK'
-        return f'400 : {message[os.environ.get("ERROR")]}'
+        return f'400 : {message[ERROR]}'
     raise ValueError
 
 

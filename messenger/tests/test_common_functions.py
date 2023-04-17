@@ -3,7 +3,7 @@ import unittest
 import json
 from os.path import join, dirname
 from dotenv import load_dotenv
-from common_functions import send_message, get_message
+from AsyncChat.messenger.common.common_functions import send_message, get_message
 
 
 class TestSocket:
@@ -50,6 +50,6 @@ class TestClass(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    dotenv_path = join(dirname(__file__), '.env')
+    dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     unittest.main()

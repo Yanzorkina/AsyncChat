@@ -2,7 +2,7 @@ import os
 import unittest
 from os.path import join, dirname
 from dotenv import load_dotenv
-from server import process_client_message
+from AsyncChat.messenger.server import process_client_message
 
 
 class TestServer(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestServer(unittest.TestCase):
         self.assertEqual(process_client_message({
             os.environ.get("ACTION"): os.environ.get("PRESENCE"),
             os.environ.get("USER"): {os.environ.get("ACCOUNT_NAME"): 'Guest'}
-        }), {os.environ.get("RESPONSE"): 'Bad Request'})
+        }), {os.environ.get("RESPONSE"): 200})
 
     def test_incorrect_user(self):
         self.assertEqual(process_client_message({
@@ -34,6 +34,6 @@ class TestServer(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    dotenv_path = join(dirname(__file__), '.env')
+    dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     unittest.main()

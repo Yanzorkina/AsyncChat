@@ -2,21 +2,20 @@ import os
 import select
 import socket
 import sys
-import json
 import threading
-import time
 from os.path import join, dirname
 from dotenv import load_dotenv
-from common_functions import get_message, send_message
+from common.common_functions import get_message, send_message
 from log.server_log_config import LOGGER
-from wrap import log
-from metaclass_server import ServerMaker
-from storage import ServerStorage
+from chatapp.common.wrap import log
+from chatapp.common.metaclass_server import ServerMaker
+from chatapp.database.storage import ServerStorage
+
+from common.jim_variables import *
 
 SERVER_LOGGER = LOGGER
 new_connection = False
 conflag_lock = threading.Lock()
-
 
 
 # Дескриптор порта
@@ -87,7 +86,6 @@ class Server(threading.Thread, metaclass=ServerMaker):
                         self.process_client_message(get_message(client_with_message), client_with_message)
                     except Exception as e:
                         print(e, 'строка 88')  # какая ошибка
-
                         SERVER_LOGGER.info(f'{client_with_message.getpeername()} отключился.')
                         self.clients.remove(client_with_message)
 
@@ -96,24 +94,24 @@ class Server(threading.Thread, metaclass=ServerMaker):
                 try:
                     self.process_message(message, send_data_list)
                 except Exception:
-                    SERVER_LOGGER.info(f'Связь с {message[os.environ.get("DESTINATION")]} была потеряна')
-                    self.clients.remove(self.names[message[os.environ.get("DESTINATION")]])
-                    del self.names[message[os.environ.get("DESTINATION")]]
+                    SERVER_LOGGER.info(f'Связь с {message[DESTINATION]} была потеряна')
+                    self.clients.remove(self.names[message[DESTINATION]])
+                    del self.names[message[DESTINATION]]
             self.messages.clear()
 
     @log
     def process_message(self, message, listen_socks):
-        if message[os.environ.get("DESTINATION")] in self.names and self.names[
-            message[os.environ.get("DESTINATION")]] in listen_socks:
-            send_message(self.names[message[os.environ.get("DESTINATION")]], message)
-            SERVER_LOGGER.info(f'Отправлено сообщение пользователю {message[os.environ.get("DESTINATION")]} '
-                               f'от пользователя {message[os.environ.get("SENDER")]}.')
-        elif message[os.environ.get("DESTINATION")] in self.names and self.names[
-            message[os.environ.get("DESTINATION")]] not in listen_socks:
+        if message[DESTINATION] in self.names and self.names[
+            message[DESTINATION]] in listen_socks:
+            send_message(self.names[message[DESTINATION]], message)
+            SERVER_LOGGER.info(f'Отправлено сообщение пользователю {message[DESTINATION]} '
+                               f'от пользователя {message[SENDER]}.')
+        elif message[DESTINATION] in self.names and self.names[
+            message[DESTINATION]] not in listen_socks:
             raise ConnectionError
         else:
             SERVER_LOGGER.error(
-                f'Пользователь {message[os.environ.get("DESTINATION")]} не зарегистрирован на сервере, '
+                f'Пользователь {message[DESTINATION]} не зарегистрирован на сервере, '
                 f'отправка сообщения невозможна.')
 
     @log
@@ -121,67 +119,69 @@ class Server(threading.Thread, metaclass=ServerMaker):
         global new_connection
         SERVER_LOGGER.debug(f'Получено сообщение от клиента: {message}')
         # Для сообщение о присутствии.
-        if os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                "PRESENCE") and os.environ.get("TIME") in message and os.environ.get("CHAT_USER") in message:
+        if ACTION in message and message[ACTION] == PRESENCE and TIME in message and CHAT_USER in message:
             # Пользователь не зарегестрирован
-            if message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")] not in self.names.keys():
-                self.names[message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")]] = client
-                send_message(client, {os.environ.get("RESPONSE"): 200})
+            if message[CHAT_USER][ACCOUNT_NAME] not in self.names.keys():
+                self.names[message[CHAT_USER][ACCOUNT_NAME]] = client
+                send_message(client, {RESPONSE: 200})
                 client_ip = client.getpeername()[0]
-                self.database.user_login(message[os.environ.get("CHAT_USER")][os.environ.get("ACCOUNT_NAME")],
-                                         client_ip)
-                print(f"Зарегистрирован пользователь {client}")
+                try:
+                    self.database.user_login(message[CHAT_USER][ACCOUNT_NAME], client_ip)
+                    print(f"В базе данных зарегистрирован пользователь {client}")
+                except Exception as err:
+                    print(err)
+                    print(f'Пользователь {client} уже зарегестрирован в базе данных')
                 with conflag_lock:
                     new_connection = True
             # Пользователь зарегестрирован
             else:
-                response = {os.environ.get("RESPONSE"): 400, os.environ.get("ERROR"): None}
-                response[os.environ.get("ERROR")] = 'Это имя уже занято'
+                response = {RESPONSE: 400, ERROR: None}
+                response[ERROR] = 'Это имя уже занято'
                 send_message(client, response)
                 self.clients.remove(client)
                 client.close()
             return
         # Для сообщений с содержимым
-        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                "MESSAGE") and os.environ.get("DESTINATION") in message and os.environ.get(
-            "TIME") in message and os.environ.get("SENDER") in message and os.environ.get("MESSAGE_TEXT") in message:
+        elif ACTION in message and message[
+            ACTION] == MESSAGE and DESTINATION in message and TIME in message and SENDER in message and MESSAGE_TEXT in message:
             self.messages.append(message)
             return
         # Если клиент выходит
-        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                "EXIT") and os.environ.get("ACCOUNT_NAME") in message:
-            self.clients.remove(self.names[message[os.environ.get("ACCOUNT_NAME")]])
-            self.names[message[os.environ.get("ACCOUNT_NAME")]].close()
-            del self.names[message[os.environ.get("ACCOUNT_NAME")]]
+        elif ACTION in message and message[ACTION] == EXIT and ACCOUNT_NAME in message:
+            self.clients.remove(self.names[message[ACCOUNT_NAME]])
+            self.names[message[ACCOUNT_NAME]].close()
+            del self.names[message[ACCOUNT_NAME]]
             with conflag_lock:
                 new_connection = True
             return
         # Блок обработки запросов, савязанных со списком контактов.
-        # Запрос списка контактов (добавить в databese функцию get_contact)
-        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                "GET_CONTACTS") and os.environ.get("CHAT_USER") in message and self.names[
-            message[os.environ.get("CHAT_USER")]] == client:
-            response = {os.environ.get("RESPONSE"): 202,
-                        os.environ.get("ALERT"): self.database.get_contacts(message[os.environ.get("CHAT_USER")])}
+        # Запрос списка контактов
+        elif ACTION in message and message[ACTION] == GET_CONTACTS and CHAT_USER in message and self.names[
+            message[CHAT_USER]] == client:
+            response = {RESPONSE: 202,
+                        ALERT: self.database.get_contacts(message[CHAT_USER])}
             send_message(client, response)
-        # Запрос добавления контакта (добавить в databese функцию add_contact)
-        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get("ADD_CONTACT") and os.environ.get("CHAT_USER") in message and message[os.environ.get("USER_LOGIN")] in message:
-            response = {os.environ.get("RESPONSE"): 200}
-            print("i'm here!")
-            self.database.add_contact(message[os.environ.get("CHAT_USER")], message[os.environ.get("USER_LOGIN")])
+        # Запрос добавления контакта
+        elif ACTION in message and message[ACTION] == ADD_CONTACT and CHAT_USER in message and message[TARGET_USER]:
+            response = {RESPONSE: 200}
+            self.database.add_contact(message[CHAT_USER], message[TARGET_USER])
             self.message = send_message(client, response)
-        # Запрос удаления контакта (добавить в databese функцию del_contact)
-        elif os.environ.get("ACTION") in message and message[os.environ.get("ACTION")] == os.environ.get(
-                "DEL_CONTACT") and os.environ.get("CHAT_USER") in message and self.names[
-            message[os.environ.get("CHAT_USER")]] == client and message[os.environ.get("USER_LOGIN")] in message:
-            response = {os.environ.get("RESPONSE"): 200}
-            self.database.del_contact(message[os.environ.get("CHAT_USER")], message[os.environ.get("USER_LOGIN")])
-            send_message(client, response)
+        # Запрос удаления контакта
+        elif ACTION in message and message[ACTION] == DEL_CONTACT and CHAT_USER in message and self.names[message[
+            CHAT_USER]] == client and TARGET_USER in message:
+            response = {RESPONSE: 200, ALERT: f"Пользователь {message[TARGET_USER]} удален из списка контактов"}
+
+            try:
+                self.database.del_contact(message[CHAT_USER], message[TARGET_USER])
+                send_message(client, response)
+            except:
+                print("Не удалось удалить пользователя")
+
 
         # Иначе отдаём Bad request
         else:
-            response = {os.environ.get("RESPONSE"): 400, os.environ.get("ERROR"): None}
-            response[os.environ.get("ERROR")] = 'Запрос некорректен.'
+            response = {RESPONSE: 400, ERROR: None}
+            response[ERROR] = 'Запрос некорректен.'
             send_message(client, response)
             return
 
