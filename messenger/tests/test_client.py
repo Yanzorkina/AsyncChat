@@ -2,7 +2,7 @@ import os
 import unittest
 from os.path import join, dirname
 from dotenv import load_dotenv
-from AsyncChat.messenger.client import create_presence, process_ans
+from messenger.client import create_presence, process_ans
 
 
 class TestClass(unittest.TestCase):

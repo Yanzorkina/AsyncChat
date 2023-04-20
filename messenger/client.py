@@ -9,9 +9,9 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from common.common_functions import get_message, send_message
 from log.client_log_config import LOGGER
+from common.jim_variables import *
 from AsyncChat.messenger.common.wrap import log
 from AsyncChat.messenger.common.metaclass_client import ClientMaker
-from common.jim_variables import *
 from database.client_database import ClientDatabase
 
 # Инициализация логгера
@@ -21,35 +21,39 @@ CLIENT_LOGGER = LOGGER
 sock_lock = threading.Lock()
 database_lock = threading.Lock()
 
-
 class ClientSender(threading.Thread, metaclass=ClientMaker):
+    """
+    Класс, отвечающий за реализацию действий пользователя - отправка, запросы
+    """
     def __init__(self, account_name, sock, database):
         self.account_name = account_name
         self.sock = sock
         self.database = database
         super().__init__()
 
-    # корректный выход
-    #@log
+    @log
     def create_exit_message(self):
+        """
+        Функция отправляющая сообщение о выходе клиента
+        """
         return {
             ACTION: EXIT,
             TIME: time.time(),
             ACCOUNT_NAME: self.account_name
         }
 
-    # Функция отправки сообщения другому пользователю
-    #@log
+    @log
     def create_message(self):
+        """
+        Функция отправки сообщения другому пользователю
+        """
         to_user = input('Введите имя получателя сообщения: ')
         message = input('Введите сообщение для отправки: ')
-
 
         with database_lock:
             if not self.database.check_user(to_user):
                 CLIENT_LOGGER.error(f"Попытка отправить сообщение незарегистрированному пользователю: {to_user}")
                 return
-
         message_dict = {
             ACTION: MESSAGE,
             TIME: time.time(),
@@ -75,10 +79,11 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
                 else:
                     CLIENT_LOGGER.error('Не удалось передать сообщение. Таймаут соединения')
 
-    # Главная функция, запрашивает команды и запускает другие функции.
     def run(self):
+        """
+        Главная функция, запрашивает команды и запускает соответствующие функции
+        """
         self.print_help()
-
         while True:
             command = input('Введите команду: ')
             # Отправка сообщений другим пользователям
@@ -93,7 +98,7 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
             elif command == 'exit':
                 with sock_lock:
                     try:
-                        send_message(self.sock, self.create_exit_message())
+                        send_message(self.sock, self.create_exit_message)
                     except:
                         pass
                     print('Завершение соединения.')
@@ -120,8 +125,10 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
             else:
                 print('Команда не распознана, попробойте снова. help - вывести поддерживаемые команды.')
 
-    # Справка.
     def print_help(self):
+        """
+        Функуция-справка. Выводит в консоль список доступных команд
+        """
         print('Поддерживаемые команды:')
         print('message - отправить сообщение. Кому и текст будет запрошены отдельно.')
         print('history - история сообщений')
@@ -130,8 +137,10 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
         print('help - вывести подсказки по командам')
         print('exit - выход из программы')
 
-    # История сообщений
     def print_history(self):
+        '''
+        Функция выводит сообщения из локальной базы данных пользователя.
+        '''
         ask = input('Показать входящие сообщения - in, исходящие - out, все - просто Enter: ')
         with database_lock:
             if ask == 'in':
@@ -145,11 +154,14 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
             else:
                 history_list = self.database.get_history()
                 for message in history_list:
-                    print(f'\nСообщение от пользователя: {message[0]}, пользователю {message[1]} от {message[3]}\n{message[2]}')
+                    print(f'\nСообщение от пользователя: {message[0]}, пользователю {message[1]}\
+                        от {message[3]}\n{message[2]}')
 
-        # Функция изменеия контактов
 
     def edit_contacts(self):
+        """
+        Функция изменеия контактов. Позволяет добавить или удалить контакт.
+        """
         ans = input('Для удаления введите del, для добавления add: ')
         if ans == 'del':
             edit = input('Введите имя удаляемного контакта: ')
@@ -171,16 +183,20 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
                         CLIENT_LOGGER.error(f'Не удалось отправить информацию на сервер. {e}')
 
 
-# Приемщик сообщений с сервера. Принимает сообщения, выводит в консоль , сохраняет в базу.
 class ClientReader(threading.Thread, metaclass=ClientMaker):
+    """
+    Класс, отвечающий за прием сообщений с сервера. Принимает сообщения, выводит в консоль , сохраняет в базу.
+    """
     def __init__(self, account_name, sock, database):
         self.account_name = account_name
         self.sock = sock
         self.database = database
         super().__init__()
 
-    # Основной цикл приёмника сообщений, принимает сообщения, выводит в консоль. Завершается при потере соединения.
     def run(self):
+        """
+        Основной цикл приёмника сообщений, принимает сообщения, выводит в консоль. Завершается при потере соединения.
+        """
         while True:
             time.sleep(1)
             with sock_lock:
@@ -215,24 +231,28 @@ class ClientReader(threading.Thread, metaclass=ClientMaker):
                     else:
                         CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {message}')
 
-# Функция генерирует запрос о присутствии клиента
 @log
-def create_presence(account_name):
+def create_presence(account_name, password):
+    """
+    Функция генерирует запрос о присутствии клиента
+    """
     out = {
         ACTION: PRESENCE,
         TIME: time.time(),
         CHAT_USER: {
             ACCOUNT_NAME: account_name
-        }
+        },
+        PASSWORD: password
     }
     CLIENT_LOGGER.debug(f'Сформировано {PRESENCE} сообщение для пользователя {account_name}')
-
     return out
 
-# Функция разбирает ответ сервера на сообщение о присутствии, возращает 200 если все ОК или генерирует исключение при\
-# ошибке.
 @log
 def process_response_ans(message):
+    """
+    Функция разбирает ответ сервера на сообщение о присутствии, возращает 200 если все ОК или\
+    генерирует исключение при ошибке.
+    """
     CLIENT_LOGGER.debug(f'Разбор приветственного сообщения от сервера: {message}')
     if RESPONSE in message:
         if message[RESPONSE] == 200:
@@ -241,20 +261,23 @@ def process_response_ans(message):
             CLIENT_LOGGER.critical(f'Ошибка сервера 400 : {message[ERROR]}')
     raise ValueError(RESPONSE)
 
-
-# Парсер аргументов коммандной строки
 @log
 def arg_parser():
+    """
+    Парсер аргументов коммандной строки
+    """
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
     parser = argparse.ArgumentParser()
     parser.add_argument('addr', default=os.environ.get("DEFAULT_IP_ADDRESS"), nargs='?')
     parser.add_argument('port', default=os.environ.get("DEFAULT_PORT"), type=int, nargs='?')
     parser.add_argument('-n', '--name', default=None, nargs='?')
+    parser.add_argument('-p', '--password', default=None, nargs='?')
     namespace = parser.parse_args(sys.argv[1:])
     server_address = namespace.addr
     server_port = namespace.port
     client_name = namespace.name
+    password = namespace.password
 
     # проверим подходящий номер порта
     if not 1023 < server_port < 65536:
@@ -262,10 +285,12 @@ def arg_parser():
             f'Попытка запуска клиента с неподходящим номером порта: {server_port}. Допустимы адреса с 1024 до 65535. Клиент завершается.')
         exit(1)
 
-    return server_address, server_port, client_name
+    return server_address, server_port, client_name, password
 
-# Функция запрос контакт листа
 def contacts_list_request(sock, name):
+    """
+    Функция, выполняющая запрос контакт-листа
+    """
     CLIENT_LOGGER.debug(f'Запрос контакт листа для пользователся {name}')
     req = {
         ACTION: GET_CONTACTS,
@@ -282,8 +307,10 @@ def contacts_list_request(sock, name):
         CLIENT_LOGGER.critical(f'Получен некорректный ответ на запрос контакт листа')
         sys.exit(1)
 
-# Функция добавления пользователя в контакт лист
 def add_contact(sock, username, contact):
+    """
+    Функция добавления пользователя в контакт лист
+    """
     CLIENT_LOGGER.debug(f'Создание контакта {contact}')
     req = {
         ACTION: ADD_CONTACT,
@@ -302,6 +329,9 @@ def add_contact(sock, username, contact):
 
 # Функция запроса списка известных пользователей
 def user_list_request(sock, username):
+    """
+    Функция добавления пользователя в контакт лист
+    """
     CLIENT_LOGGER.debug(f'Запрос списка известных пользователей {username}')
     req = {
         ACTION: USERS_REQUEST,
@@ -316,8 +346,10 @@ def user_list_request(sock, username):
         CLIENT_LOGGER.critical(f'Получен некорректный ответ на запрос списка известных пользователей')
         sys.exit(1)
 
-# Функция удаления пользователя из контакт листа
 def remove_contact(sock, username, contact):
+    """
+    Функция удаления пользователя из контакт листа
+    """
     CLIENT_LOGGER.debug(f'Удаление контакта {contact}')
     req = {
         ACTION: DEL_CONTACT,
@@ -334,8 +366,10 @@ def remove_contact(sock, username, contact):
         sys.exit(1)
     print('Удачное удаление')
 
-# Функция инициализатор базы данных. Запускается при запуске, загружает данные в базу с сервера.
 def database_load(sock, database, username):
+    """
+    Функция инициализатор базы данных. Запускается при запуске, загружает данные в базу с сервера.
+    """
     # Загружаем список известных пользователей
     try:
         users_list = user_list_request(sock, username)
@@ -354,17 +388,23 @@ def database_load(sock, database, username):
             database.add_contact(contact)
 
 def main():
+    """
+    Функия запуска клиентского приложения
+    """
     # Сообщаем о запуске
     print('Консольный месседжер. Клиентский модуль.')
 
     # Загружаем параметы коммандной строки
-    server_address, server_port, client_name = arg_parser()
+    server_address, server_port, client_name, password = arg_parser()
 
     # Если имя пользователя не было задано, необходимо запросить пользователя.
     if not client_name:
         client_name = input('Введите имя пользователя: ')
     else:
         print(f'Клиентский модуль запущен с именем: {client_name}')
+
+    if not password:
+        password = input('Введите пароль: ')
 
     CLIENT_LOGGER.info(
         f'Запущен клиент с парамертами: адрес сервера: {server_address} , порт: {server_port}, имя пользователя: {client_name}')
@@ -377,7 +417,7 @@ def main():
         transport.settimeout(1)
 
         transport.connect((server_address, server_port))
-        send_message(transport, create_presence(client_name))
+        send_message(transport, create_presence(client_name, password))
         answer = process_response_ans(get_message(transport))
         CLIENT_LOGGER.info(f'Установлено соединение с сервером. Ответ сервера: {answer}')
         print(f'Установлено соединение с сервером.')

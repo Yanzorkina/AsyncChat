@@ -3,7 +3,7 @@ import unittest
 import json
 from os.path import join, dirname
 from dotenv import load_dotenv
-from AsyncChat.messenger.common.common_functions import send_message, get_message
+from messenger.common_functions import send_message, get_message
 
 
 class TestSocket:
