@@ -11,9 +11,9 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from common.common_functions import get_message, send_message
 from log.server_log_config import LOGGER
-from common.wrap import log
-from common.metaclass_server import ServerMaker
-from database.storage import ServerStorage
+from chatapp.common.wrap import log
+from chatapp.common.metaclass_server import ServerMaker
+from chatapp.database.storage import ServerStorage
 from common.jim_variables import *
 
 SERVER_LOGGER = LOGGER

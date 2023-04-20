@@ -9,8 +9,8 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from common.common_functions import get_message, send_message
 from log.client_log_config import LOGGER
-from common.wrap import log
-from common.metaclass_client import ClientMaker
+from AsyncChat.messenger.common.wrap import log
+from AsyncChat.messenger.common.metaclass_client import ClientMaker
 from common.jim_variables import *
 from database.client_database import ClientDatabase
 
@@ -44,10 +44,12 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
         to_user = input('Введите имя получателя сообщения: ')
         message = input('Введите сообщение для отправки: ')
 
+
         with database_lock:
             if not self.database.check_user(to_user):
                 CLIENT_LOGGER.error(f"Попытка отправить сообщение незарегистрированному пользователю: {to_user}")
                 return
+
         message_dict = {
             ACTION: MESSAGE,
             TIME: time.time(),
@@ -76,6 +78,7 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
     # Главная функция, запрашивает команды и запускает другие функции.
     def run(self):
         self.print_help()
+
         while True:
             command = input('Введите команду: ')
             # Отправка сообщений другим пользователям
@@ -223,6 +226,7 @@ def create_presence(account_name):
         }
     }
     CLIENT_LOGGER.debug(f'Сформировано {PRESENCE} сообщение для пользователя {account_name}')
+
     return out
 
 # Функция разбирает ответ сервера на сообщение о присутствии, возращает 200 если все ОК или генерирует исключение при\
@@ -236,6 +240,7 @@ def process_response_ans(message):
         elif message[RESPONSE] == 400:
             CLIENT_LOGGER.critical(f'Ошибка сервера 400 : {message[ERROR]}')
     raise ValueError(RESPONSE)
+
 
 # Парсер аргументов коммандной строки
 @log

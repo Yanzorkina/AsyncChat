@@ -1,7 +1,7 @@
+import datetime
 from sqlalchemy import create_engine, Table, Column, Integer, String, Text, MetaData, DateTime
 from sqlalchemy.orm import mapper, sessionmaker
 from messenger.common.jim_variables import *
-import datetime
 
 
 # База данных КЛИЕНТА.
@@ -15,6 +15,7 @@ class ClientDatabase:
             self.username = user
 
     # Локальное сохранение сообщений
+
     class MessageHistory:
         def __init__(self, from_user, to_user, message):
             self.id = None
@@ -24,6 +25,7 @@ class ClientDatabase:
             self.date = datetime.datetime.now()
 
     # Локальные котакты.
+
     class Contacts:
         def __init__(self, contact):
             self.id = None
@@ -47,6 +49,7 @@ class ClientDatabase:
                       )
 
         # Создаём таблицу истории сообщений
+
         history = Table('message_history', self.metadata,
                         Column('id', Integer, primary_key=True),
                         Column('from_user', String),
