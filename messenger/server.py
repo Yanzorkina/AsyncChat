@@ -14,9 +14,9 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from common.common_functions import get_message, send_message
 from log.server_log_config import LOGGER
-from AsyncChat.messenger.common.wrap import log
-from AsyncChat.messenger.common.metaclass_server import ServerMaker
-from AsyncChat.messenger.database.storage import ServerStorage
+from messenger.common.wrap import log
+from messenger.common.metaclass_server import ServerMaker
+from messenger.database.storage import ServerStorage
 from common.jim_variables import *
 
 SERVER_LOGGER = LOGGER
@@ -43,9 +43,9 @@ class Port:
 
 
 class Server(threading.Thread, metaclass=ServerMaker):
-    """
-    Основновной класс сервера
-    """
+    # """
+    # Основновной класс сервера
+    # """
     port = Port()
 
     def __init__(self, listen_address, listen_port, database):
