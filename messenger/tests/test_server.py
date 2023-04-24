@@ -2,7 +2,7 @@ import os
 import unittest
 from os.path import join, dirname
 from dotenv import load_dotenv
-from AsyncChat.messenger.server import process_client_message
+from messenger.server import process_client_message
 
 
 class TestServer(unittest.TestCase):

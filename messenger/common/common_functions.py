@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 
 
 def get_message(client):
+    """
+    Функция принимающая сообщения от сервера
+    """
     dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     encoded_response = client.recv(int(os.environ.get("MAX_PACKAGE_LENGTH")))
@@ -18,6 +21,9 @@ def get_message(client):
 
 
 def send_message(sock, message):
+    """
+    Функция посылающая сообщения на сервер
+    """
     dotenv_path = join(dirname(__file__), '../.env')
     load_dotenv(dotenv_path)
     js_message = json.dumps(message)

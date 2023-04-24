@@ -1,0 +1,183 @@
+2023-04-13 11:38:51,215 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 11:39:07,597 INFO server.py Соединение ('127.0.0.1', 59220) с установлено
+2023-04-13 11:39:08,103 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681375147.5974247, 'user': {'account_name': 'Kaka'}}
+2023-04-13 11:39:08,125 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 11:39:28,536 INFO server.py Соединение ('127.0.0.1', 58604) с установлено
+2023-04-13 11:39:29,043 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681375168.5363038, 'user': {'account_name': 'Byaka'}}
+2023-04-13 11:39:29,057 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 11:39:45,583 DEBUG server.py Получено сообщение от клиента: {'action': 'message', 'time': 1681375185.107406, 'from': 'Byaka', 'mess_text': 'pooooook!', 'to': 'Kaka'}
+2023-04-13 11:39:45,584 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 11:39:45,586 INFO server.py Отправлено сообщение пользователю Kaka от пользователя Byaka.
+2023-04-13 11:39:45,586 DEBUG wrap.py Функция process_message вызвана из функции main_loop
+2023-04-13 11:48:45,680 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 11:49:01,019 INFO server.py Соединение ('127.0.0.1', 46896) с установлено
+2023-04-13 11:49:01,527 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681375741.0193915, 'user': {'account_name': 'HiMan'}}
+2023-04-13 11:49:01,543 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 11:49:14,093 INFO server.py Соединение ('127.0.0.1', 35442) с установлено
+2023-04-13 11:49:14,600 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681375754.0931106, 'user': {'account_name': 'OkMan'}}
+2023-04-13 11:49:14,618 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 11:49:29,143 DEBUG server.py Получено сообщение от клиента: {'action': 'message', 'time': 1681375768.7504313, 'from': 'OkMan', 'mess_text': 'Fooooo!', 'to': 'HiMan'}
+2023-04-13 11:49:29,143 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 11:49:29,150 INFO server.py Отправлено сообщение пользователю HiMan от пользователя OkMan.
+2023-04-13 11:49:29,151 DEBUG wrap.py Функция process_message вызвана из функции main_loop
+2023-04-13 11:49:41,172 INFO server.py ('127.0.0.1', 46896) отключился.
+2023-04-13 13:31:56,993 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:32:12,286 INFO server.py Соединение ('127.0.0.1', 49632) с установлено
+2023-04-13 13:32:12,792 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681381932.2864125, 'user': {'account_name': 'OkMan'}}
+2023-04-13 13:32:12,804 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:38:01,988 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:38:11,313 INFO server.py Соединение ('127.0.0.1', 43974) с установлено
+2023-04-13 13:38:11,820 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681382291.3134646, 'user': {'account_name': 'OkMan'}}
+2023-04-13 13:38:11,830 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:40:16,691 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:40:32,567 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:40:43,649 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:41:26,754 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:41:39,556 INFO server.py Соединение ('127.0.0.1', 56256) с установлено
+2023-04-13 13:41:40,062 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681382499.5567465, 'user': {'account_name': 'OkMan'}}
+2023-04-13 13:41:40,076 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:41:58,073 INFO server.py Соединение ('127.0.0.1', 45152) с установлено
+2023-04-13 13:41:58,579 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681382518.0735636, 'user': {'account_name': 'NewManWithIP'}}
+2023-04-13 13:41:58,602 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:42:54,176 DEBUG server.py Получено сообщение от клиента: {'action': 'message', 'time': 1681382573.719567, 'from': 'NewManWithIP', 'mess_text': 'hola!', 'to': 'OkMan'}
+2023-04-13 13:42:54,176 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:42:54,182 INFO server.py Отправлено сообщение пользователю OkMan от пользователя NewManWithIP.
+2023-04-13 13:42:54,183 DEBUG wrap.py Функция process_message вызвана из функции main_loop
+2023-04-13 13:45:49,904 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681382749.6806462, 'user': 'OkMan', 'target_user': 'Kaka'}
+2023-04-13 13:45:49,909 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:48:24,588 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:49:29,915 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:49:42,567 INFO server.py Соединение ('127.0.0.1', 53406) с установлено
+2023-04-13 13:49:43,075 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681382982.5673342, 'user': {'account_name': 'OkMan'}}
+2023-04-13 13:49:43,092 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:49:54,459 INFO server.py Соединение ('127.0.0.1', 39336) с установлено
+2023-04-13 13:49:54,966 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681382994.4587963, 'user': {'account_name': 'NewMan'}}
+2023-04-13 13:49:54,985 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:50:14,015 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681383013.8334372, 'user': 'NewMan', 'target_user': 'OkMan'}
+2023-04-13 13:50:14,024 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:56:57,252 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 13:57:11,071 INFO server.py Соединение ('127.0.0.1', 36124) с установлено
+2023-04-13 13:57:11,578 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681383431.0716903, 'user': {'account_name': 'OkMan'}}
+2023-04-13 13:57:11,592 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:57:19,881 INFO server.py Соединение ('127.0.0.1', 37018) с установлено
+2023-04-13 13:57:20,387 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681383439.8812873, 'user': {'account_name': 'MaxMin'}}
+2023-04-13 13:57:20,409 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:57:37,937 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681383457.6005707, 'user': 'MaxMin', 'target_user': 'OkMan'}
+2023-04-13 13:57:37,945 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:59:39,066 INFO server.py Соединение ('127.0.0.1', 36860) с установлено
+2023-04-13 13:59:39,574 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681383579.0662835, 'user': {'account_name': 'Kolya'}}
+2023-04-13 13:59:39,615 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 13:59:48,634 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681383588.405386, 'user': 'Kolya', 'target_user': 'MaxMin'}
+2023-04-13 13:59:48,643 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:03:49,047 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 14:04:05,539 INFO server.py Соединение ('127.0.0.1', 47188) с установлено
+2023-04-13 14:04:06,044 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681383845.539545, 'user': {'account_name': 'OkMan'}}
+2023-04-13 14:04:06,052 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:04:19,387 INFO server.py Соединение ('127.0.0.1', 53528) с установлено
+2023-04-13 14:04:19,894 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681383859.3870432, 'user': {'account_name': 'MaxMin'}}
+2023-04-13 14:04:19,903 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:04:26,919 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681383866.8349314, 'user': 'MaxMin'}
+2023-04-13 14:04:26,930 INFO server.py ('127.0.0.1', 53528) отключился.
+2023-04-13 14:31:53,111 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 14:32:10,611 INFO server.py Соединение ('127.0.0.1', 38244) с установлено
+2023-04-13 14:32:11,117 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681385530.6116164, 'user': {'account_name': 'OkMan'}}
+2023-04-13 14:32:11,128 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:32:23,101 INFO server.py Соединение ('127.0.0.1', 48472) с установлено
+2023-04-13 14:32:23,607 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681385543.1014705, 'user': {'account_name': 'MaxMin'}}
+2023-04-13 14:32:23,611 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:32:34,130 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681385553.8326957, 'user': 'MaxMin'}
+2023-04-13 14:32:34,132 INFO server.py ('127.0.0.1', 48472) отключился.
+2023-04-13 14:51:36,704 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 14:51:55,131 INFO server.py Соединение ('127.0.0.1', 39064) с установлено
+2023-04-13 14:51:55,638 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681386715.1308184, 'user': {'account_name': 'ЩOkMan'}}
+2023-04-13 14:51:55,663 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:52:04,525 INFO server.py Соединение ('127.0.0.1', 47522) с установлено
+2023-04-13 14:52:05,033 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681386724.5249288, 'user': {'account_name': 'MaxMin'}}
+2023-04-13 14:52:05,050 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:52:11,564 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681386731.312857, 'user': 'MaxMin'}
+2023-04-13 14:52:11,572 INFO server.py ('127.0.0.1', 47522) отключился.
+2023-04-13 14:58:41,393 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 14:58:57,966 INFO server.py Соединение ('127.0.0.1', 53126) с установлено
+2023-04-13 14:58:58,472 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681387137.9662492, 'user': {'account_name': 'OkMan'}}
+2023-04-13 14:58:58,493 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:59:05,908 INFO server.py Соединение ('127.0.0.1', 55930) с установлено
+2023-04-13 14:59:06,415 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681387145.9083369, 'user': {'account_name': 'MaxMin'}}
+2023-04-13 14:59:06,432 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:59:27,574 INFO server.py Соединение ('127.0.0.1', 45754) с установлено
+2023-04-13 14:59:28,081 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681387167.5748472, 'user': {'account_name': 'MaryJane'}}
+2023-04-13 14:59:28,098 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:59:40,621 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681387180.3409624, 'user': 'MaryJane', 'target_user': 'OkMan'}
+2023-04-13 14:59:40,624 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 14:59:49,641 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681387189.1307368, 'user': 'MaryJane'}
+2023-04-13 14:59:49,651 INFO server.py ('127.0.0.1', 45754) отключился.
+2023-04-13 15:23:41,950 DEBUG server.py Получено сообщение от клиента: {'action': 'exit', 'time': 1681388621.7890048, 'account_name': 'MaxMin'}
+2023-04-13 15:23:41,950 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:23:45,961 DEBUG server.py Получено сообщение от клиента: {'action': 'exit', 'time': 1681388625.885872, 'account_name': 'OkMan'}
+2023-04-13 15:23:45,962 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:24:47,391 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:25:00,632 INFO server.py Соединение ('127.0.0.1', 55884) с установлено
+2023-04-13 15:25:01,139 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681388700.632375, 'user': {'account_name': 'Jared'}}
+2023-04-13 15:25:01,167 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:25:14,170 INFO server.py Соединение ('127.0.0.1', 47226) с установлено
+2023-04-13 15:25:14,676 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681388714.1698704, 'user': {'account_name': 'Venya'}}
+2023-04-13 15:25:14,691 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:25:23,710 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681388723.5644248, 'user': 'Venya', 'target_user': 'Jared'}
+2023-04-13 15:25:23,729 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:27:35,406 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681388855.19872, 'user': 'Venya'}
+2023-04-13 15:27:35,415 INFO server.py ('127.0.0.1', 47226) отключился.
+2023-04-13 15:33:14,350 DEBUG server.py Получено сообщение от клиента: {'action': 'add_contact', 'time': 1681389194.0879743, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 15:33:14,369 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:34:11,633 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:35:24,609 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:35:34,037 INFO server.py Соединение ('127.0.0.1', 37632) с установлено
+2023-04-13 15:35:34,545 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681389334.03712, 'user': {'account_name': 'Jared'}}
+2023-04-13 15:35:34,564 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:35:43,581 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681389343.5206766, 'user': 'Jared'}
+2023-04-13 15:35:43,592 INFO server.py ('127.0.0.1', 37632) отключился.
+2023-04-13 15:36:51,337 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:43:04,775 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:43:12,431 INFO server.py Соединение ('127.0.0.1', 39288) с установлено
+2023-04-13 15:43:12,937 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681389792.4315176, 'user': {'account_name': 'Jared'}}
+2023-04-13 15:43:12,957 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:43:18,971 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681389798.6061754, 'user': 'Jared'}
+2023-04-13 15:43:18,979 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:48:25,383 DEBUG server.py Получено сообщение от клиента: {'action': 'del_contact', 'time': 1681390104.9852734, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 15:48:25,389 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:48:49,923 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681390129.5683167, 'user': 'Jared'}
+2023-04-13 15:48:49,931 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:49:33,494 DEBUG server.py Получено сообщение от клиента: {'action': 'del_contact', 'time': 1681390173.1184509, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 15:49:33,500 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:56:22,920 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:57:35,964 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 15:58:00,350 INFO server.py Соединение ('127.0.0.1', 34416) с установлено
+2023-04-13 15:58:00,857 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681390680.3498166, 'user': {'account_name': 'Jared'}}
+2023-04-13 15:58:00,881 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:58:10,397 DEBUG server.py Получено сообщение от клиента: {'action': 'del_contact', 'time': 1681390690.2424324, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 15:58:10,400 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 15:58:37,439 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681390717.0724437, 'user': 'Jared'}
+2023-04-13 15:58:37,450 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:02:04,674 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 16:02:06,946 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 16:02:14,045 INFO server.py Соединение ('127.0.0.1', 48408) с установлено
+2023-04-13 16:02:14,551 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681390934.0451481, 'user': {'account_name': 'Jared'}}
+2023-04-13 16:02:14,573 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:02:27,097 DEBUG server.py Получено сообщение от клиента: {'action': 'del_contact', 'time': 1681390946.8016508, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 16:02:27,104 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:02:57,649 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681390977.2015483, 'user': 'Jared'}
+2023-04-13 16:02:57,660 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:12:04,831 DEBUG server.py Получено сообщение от клиента: {'action': 'del_contact', 'time': 1681391524.653188, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 16:12:04,834 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:13:08,921 INFO server.py ('127.0.0.1', 48408) отключился.
+2023-04-13 16:16:57,338 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-04-13 16:17:14,324 INFO server.py Соединение ('127.0.0.1', 37372) с установлено
+2023-04-13 16:17:14,831 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681391834.324041, 'user': {'account_name': 'get_contacts'}}
+2023-04-13 16:17:14,857 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:17:24,876 DEBUG server.py Получено сообщение от клиента: {'action': 'exit', 'time': 1681391844.7719414, 'account_name': 'get_contacts'}
+2023-04-13 16:17:24,876 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:17:30,677 INFO server.py Соединение ('127.0.0.1', 59938) с установлено
+2023-04-13 16:17:31,183 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1681391850.6771898, 'user': {'account_name': 'Jared'}}
+2023-04-13 16:17:31,196 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:17:43,720 DEBUG server.py Получено сообщение от клиента: {'action': 'get_contacts', 'time': 1681391863.3549821, 'user': 'Jared'}
+2023-04-13 16:17:43,731 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
+2023-04-13 16:17:52,247 DEBUG server.py Получено сообщение от клиента: {'action': 'del_contact', 'time': 1681391871.8461018, 'user': 'Jared', 'target_user': 'Venya'}
+2023-04-13 16:17:52,262 DEBUG wrap.py Функция process_client_message вызвана из функции main_loop
