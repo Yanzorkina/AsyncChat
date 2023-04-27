@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 from common.common_functions import get_message, send_message
 from log.client_log_config import LOGGER
 from common.jim_variables import *
-from AsyncChat.messenger.common.wrap import log
-from AsyncChat.messenger.common.metaclass_client import ClientMaker
+from messenger.common.wrap import log
+from messenger.common.metaclass_client import ClientMaker
 from database.client_database import ClientDatabase
 
 # Инициализация логгера
@@ -22,9 +22,9 @@ sock_lock = threading.Lock()
 database_lock = threading.Lock()
 
 class ClientSender(threading.Thread, metaclass=ClientMaker):
-    """
-    Класс, отвечающий за реализацию действий пользователя - отправка, запросы
-    """
+    # """
+    # Класс, отвечающий за реализацию действий пользователя - отправка, запросы
+    # """
     def __init__(self, account_name, sock, database):
         self.account_name = account_name
         self.sock = sock
@@ -184,9 +184,9 @@ class ClientSender(threading.Thread, metaclass=ClientMaker):
 
 
 class ClientReader(threading.Thread, metaclass=ClientMaker):
-    """
-    Класс, отвечающий за прием сообщений с сервера. Принимает сообщения, выводит в консоль , сохраняет в базу.
-    """
+    # """
+    # Класс, отвечающий за прием сообщений с сервера. Принимает сообщения, выводит в консоль , сохраняет в базу.
+    # """
     def __init__(self, account_name, sock, database):
         self.account_name = account_name
         self.sock = sock

@@ -2,7 +2,8 @@ import datetime
 
 from sqlalchemy import Table, create_engine, MetaData, Column, Integer, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import sessionmaker, mapper
-from AsyncChat.messenger.common.jim_variables import *
+
+from messenger.common.jim_variables import *
 
 
 class ServerStorage:

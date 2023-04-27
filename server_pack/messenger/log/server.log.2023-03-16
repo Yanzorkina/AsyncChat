@@ -1,0 +1,17 @@
+2023-03-16 17:50:37,752 CRITICAL server_log_config.py Критическое событие
+2023-03-16 17:50:37,753 ERROR server_log_config.py Ошибка
+2023-03-16 17:50:37,753 INFO server_log_config.py Инфо
+2023-03-16 17:50:37,753 DEBUG server_log_config.py Отладка
+2023-03-16 17:50:42,280 CRITICAL server_log_config.py Критическое событие
+2023-03-16 17:50:42,280 ERROR server_log_config.py Ошибка
+2023-03-16 17:50:42,280 INFO server_log_config.py Инфо
+2023-03-16 17:50:42,280 DEBUG server_log_config.py Отладка
+2023-03-16 18:57:33,357 INFO server.py Сервер запущен. Порт подлючения 7777, прием с любых адресов
+2023-03-16 18:57:40,382 DEBUG server.py Получено сообщение от клиента
+2023-03-16 18:57:40,382 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1678982260.3783317, 'olly': {'account_name': 'Guest'}}
+2023-03-16 18:57:40,382 INFO server.py Создан ответ клиенту {'response': 200}
+2023-03-16 18:57:40,384 DEBUG server.py Соединение с клиентом ('127.0.0.1', 34758) закрывается.
+2023-03-16 18:58:20,941 DEBUG server.py Получено сообщение от клиента
+2023-03-16 18:58:20,941 DEBUG server.py Получено сообщение от клиента: {'action': 'presence', 'time': 1678982300.9380345, 'olly': {'account_name': 'Guest'}}
+2023-03-16 18:58:20,941 INFO server.py Создан ответ клиенту {'response': 200}
+2023-03-16 18:58:20,945 DEBUG server.py Соединение с клиентом ('127.0.0.1', 54324) закрывается.

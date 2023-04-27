@@ -1,12 +1,13 @@
 from __main__ import __file__ as where_am_i
-import AsyncChat.messenger.log.client_log_config as of_client
-import AsyncChat.messenger.log.server_log_config as of_server
+import messenger.log.client_log_config as of_client
+import messenger.log.server_log_config as of_server
 import inspect
 
 if where_am_i.endswith('server.py'):
     LOGGER = of_server.LOGGER
 if where_am_i.endswith('client.py'):
     LOGGER = of_client.LOGGER
+
 
 
 def log(function):
